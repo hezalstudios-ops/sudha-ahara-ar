@@ -1,1 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AR Menu</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
 
+<body style="margin:0; overflow:hidden;">
+  <a-scene embedded arjs>
+    <a-camera position="0 1.6 0"></a-camera>
+
+    <a-entity position="0 0 -1">
+      <a-plane
+        src="Final_MainMenu_SudhaAhara.jpg"
+        width="0.7"
+        height="1"
+        rotation="-90 0 0">
+      </a-plane>
+    </a-entity>
+
+  </a-scene>
+</body>
+</html>
