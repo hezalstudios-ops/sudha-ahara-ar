@@ -1,24 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AR Menu</title>
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
+  <meta charset="UTF-8">
+  <title>Sudha Ahara Menu</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    #camera {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    #menu {
+      position: fixed;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      max-width: 420px;
+      z-index: 2;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+      border-radius: 12px;
+    }
+  </style>
 </head>
 
-<body style="margin:0; overflow:hidden;">
-  <a-scene embedded arjs>
-    <a-camera position="0 1.6 0"></a-camera>
+<body>
 
-    <a-entity position="0 0 -1">
-      <a-plane
-        src="Final_MainMenu_SudhaAhara.jpg"
-        width="0.7"
-        height="1"
-        rotation="-90 0 0">
-      </a-plane>
-    </a-entity>
+  <!-- Camera Feed -->
+  <video id="camera" autoplay muted playsinline></video>
 
-  </a-scene>
+  <!-- Static Flyer -->
+  <img
+    id="menu"
+    src="Final_MainMenu_SudhaAhara.jpg"
+    alt="Sudha Ahara Menu"
+  />
+
+  <script>
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false
+        });
+        document.getElementById("camera").srcObject = stream;
+      } catch (err) {
+        alert("Camera access is required.");
+      }
+    }
+    startCamera();
+  </script>
+
 </body>
 </html>
