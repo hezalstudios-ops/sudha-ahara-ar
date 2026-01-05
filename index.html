@@ -1,67 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Sudha Ahara Menu</title>
+  <meta charset="utf-8">
+  <title>Sudha Ahara AR Menu</title>
+
+  <!-- A-Frame + AR.js (WebXR) -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: black;
-    }
-
-    #camera {
+    body { margin: 0; overflow: hidden; }
+    #hint {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: 1;
-    }
-
-    #menu {
-      position: fixed;
-      bottom: 10%;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      width: 70%;
-      max-width: 420px;
-      z-index: 2;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-      border-radius: 12px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-family: sans-serif;
+      z-index: 10;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Camera Feed -->
-  <video id="camera" autoplay muted playsinline></video>
+<div id="hint">Tap on any surface to place menu</div>
 
-  <!-- Static Flyer -->
-  <img
+<a-scene
+  embedded
+  renderer="colorManagement: true; physicallyCorrectLights: true"
+  vr-mode-ui="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false;">
+
+  <!-- Lighting -->
+  <a-light type="ambient" intensity="0.8"></a-light>
+  <a-light type="directional" position="0 5 5" intensity="0.6"></a-light>
+
+  <!-- Camera -->
+  <a-camera></a-camera>
+
+  <!-- Reticle (shows where it will place) -->
+  <a-entity
+    id="reticle"
+    geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+    material="color: white; shader: flat"
+    rotation="-90 0 0"
+    visible="false">
+  </a-entity>
+
+  <!-- Menu -->
+  <a-plane
     id="menu"
     src="Final_MainMenu_SudhaAhara.jpg"
-    alt="Sudha Ahara Menu"
-  />
+    width="0.7"
+    height="1"
+    visible="false"
+    material="transparent: true"
+    shadow>
+  </a-plane>
 
-  <script>
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: false
-        });
-        document.getElementById("camera").srcObject = stream;
-      } catch (err) {
-        alert("Camera access is required.");
-      }
+</a-scene>
+
+<script>
+  const scene = document.querySelector('a-scene');
+  const reticle = document.querySelector('#reticle');
+  const menu = document.querySelector('#menu');
+  let placed = false;
+
+  scene.addEventListener('click', () => {
+    if (reticle.object3D.visible && !placed) {
+      menu.setAttribute('position', reticle.getAttribute('position'));
+      menu.setAttribute('rotation', '-90 0 0');
+      menu.setAttribute('visible', true);
+      placed = true;
+      document.getElementById('hint').style.display = 'none';
     }
-    startCamera();
-  </script>
+  });
+
+  scene.addEventListener('loaded', () => {
+    scene.systems['arjs'].el.sceneEl.addEventListener('hit-test', e => {
+      if (!placed) {
+        reticle.setAttribute('position', e.detail.position);
+        reticle.object3D.visible = true;
+      }
+    });
+  });
+</script>
 
 </body>
 </html>
